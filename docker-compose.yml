@@ -1,0 +1,39 @@
+version: '3.7'
+services:
+  db:
+    build: mariadb/.
+    container_name: zatio-demo-mysql
+    ports: 
+      - "3306:3306"  
+    environment: 
+      - PROJECT_NAME=zatio_demo
+      - USER=admin
+      - USER_PASS=admin
+      - DB_NAME=wms_${PROJECT_NAME}
+      - ROOT_PASS=admin  
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+      - ./mariadb/docker.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf      
+  web:
+    build: zatio/.
+    container_name: zatio-demo-web
+    ports: 
+      - "80:80"
+      - "443:443"
+    environment: 
+      - USER=admin
+      - PASS=admin
+      - NAME=zatio
+      - NAME_PROJECT=zatio_demo
+      - USER_LOCAL=userzatio
+    volumes:
+      - ./zatio-data:/var/www
+      - ./zatio/start.sh:/root/zatio/start.sh
+    depends_on:
+      - db
+    links: 
+      - db
+
+volumes:
+  db-data: 
+  zatio-data: 
